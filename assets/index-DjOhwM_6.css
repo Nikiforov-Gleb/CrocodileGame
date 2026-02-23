@@ -1,0 +1,1 @@
+.canvas-container{position:relative;width:80vw;height:60vh;margin:0 auto}.canvas-container canvas{display:block;border:1px solid black;cursor:crosshair}.canvas-container .clear-button{position:absolute;top:10px;left:10px;z-index:10;padding:5px 10px;font-size:16px;cursor:pointer}
