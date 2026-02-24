@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:serv": "nodemon --exec ts-node src/server/server.ts",
     "build": "tsc -b && vite build",
     "lint:check": "eslint src && prettier --check .",
     "lint:fix": "eslint src --fix && prettier --write .",
@@ -15,7 +16,9 @@
   },
   "dependencies": {
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
@@ -24,7 +27,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^24.10.1",
+    "@types/node": "^24.10.13",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
@@ -37,7 +40,9 @@
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
+    "nodemon": "^3.1.14",
     "prettier": "3.8.1",
+    "ts-node": "^10.9.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
     "vite": "^7.3.1",
