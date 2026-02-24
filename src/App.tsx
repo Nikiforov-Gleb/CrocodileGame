@@ -5,7 +5,7 @@ function App() {
   return (
     <div>
       <p>Hello world!!</p>
-      <button onClick = { sendMessage }>Send</button>
+      <button onClick={sendMessage}>Send</button>
       <Canvas />
     </div>
   );
