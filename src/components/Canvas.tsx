@@ -1,15 +1,17 @@
-import "../styles/styles.css";
+import "../styles/canvas-styles.css";
 import { useEffect, useRef, useState } from "react";
 
 export const Canvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const [isDrawing, setDrawingState] = useState(false);
   const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -20,8 +22,20 @@ export const Canvas = () => {
 
     ctxRef.current = ctx;
 
-    canvas.width = window.innerWidth * 0.8;
-    canvas.height = window.innerHeight * 0.9;
+    // Устанавливаем размеры канваса в пикселях
+
+    // canvas.width = window.innerWidth * 0.5;
+    // canvas.height = window.innerHeight * 0.5;
+
+    const handleResize = () => {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const getMousePos = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
@@ -65,7 +79,7 @@ export const Canvas = () => {
   };
 
   return (
-    <div className="canvas-container">
+    <div ref={containerRef} className="canvas-container">
       <canvas
         ref={canvasRef}
         onMouseDown={startDrawing}

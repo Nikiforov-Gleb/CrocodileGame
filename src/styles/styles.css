@@ -1,22 +1,58 @@
-.canvas-container {
-  position: relative;
-  width: 80vw; /* 80% окна */
-  height: 60vh; /* 60% окна */
+:root {
+  --background-color: #f8fafc;
+  --primary-color: #9fe284;
+  --shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem 0;
+  box-shadow: var(--shadow);
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
-.canvas-container canvas {
-  display: block;
-  border: 1px solid black;
-  cursor: crosshair;
+.desktop-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2rem;
+  min-height: 0;
 }
 
-.canvas-container .clear-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  padding: 5px 10px;
-  font-size: 16px;
-  cursor: pointer;
+@media (min-width: 1024px) {
+  .desktop-container {
+    flex-direction: row;
+  }
 }

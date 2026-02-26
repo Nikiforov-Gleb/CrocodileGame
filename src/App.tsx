@@ -1,18 +1,22 @@
 import { Canvas } from "./components/Canvas";
-import { socket } from "./server/socket";
+import { Chat } from "./components/Chat";
+
+import "./styles/styles.css";
 
 function App() {
   return (
-    <div>
-      <p>Hello world!!</p>
-      <button onClick={sendMessage}>Send</button>
-      <Canvas />
+    <div className="app">
+      <header>
+        <div className="container">
+          <p>Hello world!!</p>
+        </div>
+      </header>
+      <div className="desktop-container">
+        <Canvas />
+        <Chat />
+      </div>
     </div>
   );
-}
-
-function sendMessage() {
-  socket.emit("chatMessage", "test message");
 }
 
 export default App;
