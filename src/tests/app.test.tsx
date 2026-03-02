@@ -5,7 +5,7 @@ import App from "../App";
 describe("App component", () => {
   test("renders Hello world text", () => {
     render(<App />);
-    const element = screen.getByText(/hello world/i);
+    const element = screen.getByText(/Крокодил/i);
     expect(element).toBeInTheDocument();
   });
 });

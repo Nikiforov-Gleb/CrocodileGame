@@ -2,6 +2,7 @@ import "../styles/chat-styles.css";
 import { socket } from "../server/socket.ts";
 import { useState, useEffect } from "react";
 import type { Message } from "../types.ts";
+import { UserData } from "../base/userData";
 
 export const Chat = () => {
   const [input, setInput] = useState("");
@@ -21,7 +22,7 @@ export const Chat = () => {
 
   const handleSend = () => {
     if (!input.trim()) return;
-    socket.emit("chatMessage", input);
+    socket.emit("chatMessage", input, UserData.nickname);
     setInput("");
   };
 
@@ -32,7 +33,7 @@ export const Chat = () => {
           const isSelf = msg.userId === socket.id;
           return (
             <div key={i} className={`message ${isSelf ? "self" : "other"}`}>
-              <span className="username">{isSelf ? "Я" : "Игрок"}:</span>
+              <span className="username">{msg.userName}:</span>
               <span className="text">{msg.text}</span>
             </div>
           );

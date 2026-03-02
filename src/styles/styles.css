@@ -1,6 +1,8 @@
 :root {
   --background-color: #f8fafc;
   --primary-color: #9fe284;
+  --gray-300: #cbd5e1;
+  --gray-800: #1e293b;
   --shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
@@ -49,6 +51,18 @@ header {
   flex: 1;
   gap: 2rem;
   min-height: 0;
+}
+
+footer {
+  background-color: var(--gray-800);
+  color: var(--gray-300);
+  padding: 1.5rem 0;
+  margin-top: auto;
+  font-size: 0.875rem;
+}
+
+footer p {
+  margin-bottom: 0.5rem;
 }
 
 @media (min-width: 1024px) {

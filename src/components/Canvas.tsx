@@ -1,15 +1,26 @@
-import "../styles/canvas-styles.css";
-import { useEffect, useRef, useState } from "react";
+import "../styles/game-styles.css";
+import { socket } from "../server/socket.ts";
+import { useEffect, useRef } from "react";
+import { createCanvasActions } from "./canvasActions.ts";
+import type { Point } from "../types.ts";
+import { getRealPointFromNormalized } from "../utils.ts";
 
-export const Canvas = () => {
+interface CanvasProps {
+  getMethods?: (clearCanvas: () => void) => void;
+}
+
+export const Canvas = ({ getMethods }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
-  const [isDrawing, setDrawingState] = useState(false);
-  const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
+  const isDrawingRef = useRef(false);
+  const lastPosRef = useRef<Point | null>(null);
+  const canvasActionRef = useRef<ReturnType<typeof createCanvasActions> | null>(
+    null,
+  );
 
   useEffect(() => {
-    const canvas = canvasRef.current!;
+    const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
 
@@ -22,10 +33,12 @@ export const Canvas = () => {
 
     ctxRef.current = ctx;
 
-    // Устанавливаем размеры канваса в пикселях
-
-    // canvas.width = window.innerWidth * 0.5;
-    // canvas.height = window.innerHeight * 0.5;
+    canvasActionRef.current = createCanvasActions(
+      canvasRef,
+      ctxRef,
+      lastPosRef,
+      isDrawingRef,
+    );
 
     const handleResize = () => {
       canvas.width = container.clientWidth;
@@ -35,61 +48,36 @@ export const Canvas = () => {
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    if (getMethods && canvasActionRef.current)
+      getMethods(() => canvasActionRef.current!.clearCanvas);
 
-  const getMousePos = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-    const canvas = canvasRef.current!;
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+    socket.on("drawing", ([start, end]: [Point, Point]) => {
+      if (!canvasActionRef.current) return;
+      const realStart: Point = getRealPointFromNormalized(start, canvas);
+      const realEnd: Point = getRealPointFromNormalized(end, canvas);
+
+      canvasActionRef.current.drawLine(ctx, realStart, realEnd);
+    });
+
+    socket.on("clearCanvas", () => {
+      canvasActionRef.current?.clearCanvas(false);
+    });
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      socket.off("drawing");
     };
-  };
-
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    setDrawingState(true);
-    setLastPos(getMousePos(e));
-  };
-
-  const stopDrawing = () => {
-    setDrawingState(false);
-    setLastPos(null);
-  };
-
-  const drawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !lastPos || !ctxRef.current) return;
-    const pos = getMousePos(e);
-    ctxRef.current.beginPath();
-    ctxRef.current.moveTo(lastPos.x, lastPos.y);
-    ctxRef.current.lineTo(pos.x, pos.y);
-    ctxRef.current.stroke();
-
-    setLastPos(pos);
-  };
-
-  const clearCanvas = () => {
-    if (!ctxRef.current || !canvasRef.current) return;
-    ctxRef.current.clearRect(
-      0,
-      0,
-      canvasRef.current.width,
-      canvasRef.current.height,
-    );
-  };
+  }, [getMethods]);
 
   return (
     <div ref={containerRef} className="canvas-container">
       <canvas
         ref={canvasRef}
-        onMouseDown={startDrawing}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        onMouseMove={drawing}
+        onMouseDown={(e) => canvasActionRef.current?.startDrawing(e)}
+        onMouseUp={() => canvasActionRef.current?.stopDrawing()}
+        onMouseLeave={() => canvasActionRef.current?.stopDrawing()}
+        onMouseMove={(e) => canvasActionRef.current?.drawing(e)}
       />
-      <button className="clear-button" onClick={clearCanvas}>
-        Очистить
-      </button>
     </div>
   );
 };
