@@ -9,7 +9,6 @@ describe("App component", () => {
   test("renders Hello world text", () => {
     render(
       <Provider store={store}>
-        й
         <App />
       </Provider>,
       { wrapper: BrowserRouter },
