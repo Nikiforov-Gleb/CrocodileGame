@@ -49,6 +49,13 @@ canvas {
   min-width: 30px;
 }
 
+.clear-button:disabled {
+  background-color: #d8e5d3;
+  color: #8a8a8a;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .guessed-word {
   font-size: 20px;
   color: #555;

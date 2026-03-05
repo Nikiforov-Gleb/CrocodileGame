@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 import type { Message, Point } from "../types";
+import { Gameflow } from "../base/gameflow.ts";
 
 const httpServer = createServer();
 
@@ -10,8 +11,14 @@ const server = new Server(httpServer, {
   },
 });
 
+const gameflow = new Gameflow(server);
+
 server.on("connection", (socket) => {
   socket.emit("connectionSet", socket.id);
+
+  socket.on("joinGame", ({ nickname }) => {
+    gameflow.startPlay(socket.id, nickname);
+  });
 
   socket.on("chatMessage", (msgText: string, nickname: string) => {
     const msg: Message = {
@@ -20,6 +27,7 @@ server.on("connection", (socket) => {
       text: msgText,
     };
     server.emit("newMsg", msg);
+    gameflow.checkGuess(msg);
   });
 
   socket.on("drawing", (points: [Point, Point]) => {

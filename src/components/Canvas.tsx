@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import { createCanvasActions } from "./canvasActions.ts";
 import type { Point } from "../types.ts";
 import { getRealPointFromNormalized } from "../utils.ts";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store.ts";
 
 interface CanvasProps {
   getMethods?: (clearCanvas: () => void) => void;
@@ -18,6 +20,8 @@ export const Canvas = ({ getMethods }: CanvasProps) => {
   const canvasActionRef = useRef<ReturnType<typeof createCanvasActions> | null>(
     null,
   );
+
+  const canDraw = useSelector((state: RootState) => state.gameflow.isHost);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -73,10 +77,10 @@ export const Canvas = ({ getMethods }: CanvasProps) => {
     <div ref={containerRef} className="canvas-container">
       <canvas
         ref={canvasRef}
-        onMouseDown={(e) => canvasActionRef.current?.startDrawing(e)}
-        onMouseUp={() => canvasActionRef.current?.stopDrawing()}
-        onMouseLeave={() => canvasActionRef.current?.stopDrawing()}
-        onMouseMove={(e) => canvasActionRef.current?.drawing(e)}
+        onMouseDown={(e) => canDraw && canvasActionRef.current?.startDrawing(e)}
+        onMouseUp={() => canDraw && canvasActionRef.current?.stopDrawing()}
+        onMouseLeave={() => canDraw && canvasActionRef.current?.stopDrawing()}
+        onMouseMove={(e) => canDraw && canvasActionRef.current?.drawing(e)}
       />
     </div>
   );

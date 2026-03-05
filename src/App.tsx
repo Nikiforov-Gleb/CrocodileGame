@@ -1,6 +1,6 @@
 import "./styles/styles.css";
 
-import { Route, Routes } from "react-router";
+import { Route, Routes } from "react-router-dom";
 import { StartPage } from "./pages/start";
 import { GamePage } from "./pages/game";
 import { AboutPage } from "./pages/about";

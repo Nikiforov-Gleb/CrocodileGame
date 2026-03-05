@@ -3,10 +3,14 @@ import { socket } from "../server/socket.ts";
 import { useState, useEffect } from "react";
 import type { Message } from "../types.ts";
 import { UserData } from "../base/userData";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store.ts";
 
 export const Chat = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const canWrite = !useSelector((state: RootState) => state.gameflow.isHost);
 
   useEffect(() => {
     const handleNewMsg = (msg: Message) => {
@@ -53,8 +57,11 @@ export const Chat = () => {
           required
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          disabled={!canWrite}
         />
-        <button type="submit">Отправить</button>
+        <button type="submit" disabled={!canWrite}>
+          Отправить
+        </button>
       </form>
     </div>
   );

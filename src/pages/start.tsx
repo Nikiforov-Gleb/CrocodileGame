@@ -4,6 +4,7 @@ import type { FC } from "react";
 import { useState } from "react";
 import { UserData } from "../base/userData";
 import { useNavigate } from "react-router-dom";
+import { socket } from "../server/socket.ts";
 
 export const StartPage: FC = () => {
   const [nameInput, setNameInput] = useState(UserData.nickname || "");
@@ -15,6 +16,7 @@ export const StartPage: FC = () => {
 
     UserData.setNickname(trimmedName);
     navigate("/game");
+    socket.emit("startPlay");
   };
   return (
     <>

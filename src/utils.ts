@@ -19,3 +19,19 @@ export const getRealPointFromNormalized = (
     y: point.y * canvas.height,
   };
 };
+
+export const getRandomWord = async (): Promise<string> => {
+  try {
+    const res = await fetch(
+      "https://random-word-api.herokuapp.com/word?number=1&diff=1",
+    );
+    if (!res.ok) {
+      throw new Error("Ошибка запроса");
+    }
+    const data: string[] = await res.json();
+    return data[0];
+  } catch (error) {
+    console.error(error);
+    return "";
+  }
+};

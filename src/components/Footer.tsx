@@ -9,7 +9,7 @@ export const Footer: FC = () => {
           Crocodile game App &copy;
           <script>document.write(new Date().getFullYear());</script>
         </p>
-        <p>Weather data provided by OpenWeatherMap</p>
+        <p>Randow words provided by RandomWordAPI</p>
       </div>
     </footer>
   );

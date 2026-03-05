@@ -46,6 +46,17 @@
   box-shadow: 0 0 0 3px rgba(169, 243, 173, 0.25);
 }
 
+.input-area input:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  border-color: #ddd;
+  cursor: not-allowed;
+}
+
+.input-area input:disabled::placeholder {
+  color: #e9ecef;
+}
+
 .input-area button {
   margin-left: 0.5rem;
   padding: 0.5rem 1rem;
@@ -57,10 +68,14 @@
   min-width: 30px;
 }
 
+.input-area button:disabled {
+  background-color: #d8e5d3;
+  color: #8a8a8a;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .message {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem; /* расстояние между именем и текстом */
   padding: 0.5rem 1rem;
   border-radius: 12px;
   max-width: 70%;
@@ -70,10 +85,7 @@
 .username {
   font-weight: bold;
   color: #555;
-}
-
-.text {
-  display: inline-block;
+  margin-right: 0.5rem;
 }
 
 .message.self {
