@@ -17,9 +17,11 @@ export const Game = () => {
   const [clearFn, setClearFn] = useState<(needEmit?: boolean) => void>();
   const word = useSelector((state: RootState) => state.gameflow.word);
   const isHost = useSelector((state: RootState) => state.gameflow.isHost);
+  const gamePhase = useSelector((state: RootState) => state.gameflow.gamePhase);
 
   useEffect(() => {
     socket.emit("joinGame", { nickname: UserData.nickname });
+    console.log("join");
   }, []);
 
   useEffect(() => {
@@ -52,7 +54,9 @@ export const Game = () => {
         >
           Очистить
         </button>
-        <span className="guessed-word">{word ?? ""}</span>
+        <span className="guessed-word">
+          {gamePhase === "loadingRound" ? "Загадываем слово..." : (word ?? "")}
+        </span>
         <Timer />
       </div>
     </div>

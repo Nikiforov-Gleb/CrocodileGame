@@ -1,6 +1,6 @@
 import "../styles/chat-styles.css";
 import { socket } from "../server/socket.ts";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Message } from "../types.ts";
 import { UserData } from "../base/userData";
 import { useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import type { RootState } from "../store/store.ts";
 export const Chat = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const canWrite = !useSelector((state: RootState) => state.gameflow.isHost);
 
@@ -24,6 +25,12 @@ export const Chat = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const handleSend = () => {
     if (!input.trim()) return;
     socket.emit("chatMessage", input, UserData.nickname);
@@ -32,11 +39,15 @@ export const Chat = () => {
 
   return (
     <div className="container-chat">
-      <div className="messages-area" id="messages">
+      <div className="messages-area" id="messages" ref={messagesEndRef}>
         {messages.map((msg, i) => {
           const isSelf = msg.userId === socket.id;
+          const isAdmin = msg.userId === "admin";
           return (
-            <div key={i} className={`message ${isSelf ? "self" : "other"}`}>
+            <div
+              key={i}
+              className={`message ${isSelf ? "self" : "other"} ${isAdmin ? "admin" : ""}`}
+            >
               <span className="username">{msg.userName}:</span>
               <span className="text">{msg.text}</span>
             </div>

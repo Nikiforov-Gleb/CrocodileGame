@@ -1,9 +1,9 @@
 import { Server } from "socket.io";
 import { getRandomWord } from "../utils.ts";
-import type { Message } from "../types.ts";
+import type { GamePhase, Message } from "../types.ts";
 
 export interface GameState {
-  isPlaying: boolean;
+  gamePhase: GamePhase;
   currentDrawerId: string | null;
   timeLeft: number;
 }
@@ -17,7 +17,8 @@ export class Gameflow {
   private players: string[] = [];
   private nicknames: Record<string, string> = {};
   private currentDrawerIndex = -1;
-  private isPlaying: boolean = false;
+  private victoriousIndex = -1;
+  private gamePhase: GamePhase = "notActive";
   private timeLeft: number = 0;
 
   private currentWord: string | null = null;
@@ -26,49 +27,72 @@ export class Gameflow {
   }
 
   startPlay(id: string, nickname: string) {
-    console.log(this.players.length);
     if (!this.players.includes(id)) {
       this.players.push(id);
       this.nicknames[id] = nickname;
-      if (!this.isPlaying) {
+      if (this.gamePhase === "notActive") {
         this.startNewRound();
-        this.currentDrawerIndex =
-          (this.currentDrawerIndex + 1) % this.players.length;
       }
     }
     this.emitCurrentState(id);
   }
 
+  stopGame() {
+    this.clearTimer();
+    this.gamePhase = "notActive";
+    this.currentWord = null;
+    this.timeLeft = 0;
+    this.currentDrawerIndex = -1;
+    this.victoriousIndex = -1;
+  }
+
   removePlayer(id: string) {
     if (this.players.includes(id)) {
+      const removedIndex = this.players.indexOf(id);
       this.players = this.players.filter((playerId) => playerId !== id);
+      delete this.nicknames[id];
       if (this.players.length === 0) {
-        //заканчиваем
+        this.stopGame();
+        return;
       }
-      if (this.getDrawerId() === id) {
-        //начинаем заново
+      if (removedIndex < this.currentDrawerIndex) {
+        this.currentDrawerIndex--;
+      } else if (removedIndex === this.currentDrawerIndex) {
+        this.endRound("Ведущий вышел из игры:( Новый раунд");
       }
+      if (removedIndex === this.victoriousIndex) this.victoriousIndex = -1;
     }
   }
 
   checkGuess(msg: Message) {
     if (!this.currentWord) return;
     if (this.currentWord.toLowerCase() === msg.text.toLowerCase()) {
-      this.endRound(msg.userId);
+      this.endRound("Слово угадано", msg.userId);
     }
   }
 
   async startNewRound() {
-    if (this.players.length === 0) return;
-    this.currentWord = await getRandomWord();
+    if (this.gamePhase === "loadingRound") return;
+    this.gamePhase = "loadingRound";
+    this.emitAllCurrentState();
+    if (this.victoriousIndex !== -1) {
+      this.currentDrawerIndex = this.victoriousIndex;
+    } else {
+      this.currentDrawerIndex =
+        (this.currentDrawerIndex + 1) % this.players.length;
+    }
 
+    this.currentWord = await getRandomWord();
+    if (this.players.length === 0) return;
+
+    this.gamePhase = "playing";
+    this.timeLeft = this.roundDuration;
     this.emitAllCurrentState();
     this.emitGameHost(true);
     this.startTimer();
-    this.isPlaying = true;
   }
 
-  private endRound(victoriousId?: string) {
+  private endRound(reason: string, victoriousId?: string) {
     this.server.emit("endRound");
 
     this.clearTimer();
@@ -76,39 +100,32 @@ export class Gameflow {
     if (victoriousId) {
       const nickname = this.nicknames[victoriousId] || victoriousId;
       const msg: Message = {
-        userId: "",
+        userId: "admin",
         userName: "Крокодил",
         text: `${nickname} отгадал "${this.currentWord}"`,
       };
       this.server.emit("newMsg", msg);
-
-      const victoriousIndex = this.players.indexOf(victoriousId);
-      if (victoriousIndex !== -1) {
-        this.currentDrawerIndex = this.players.indexOf(victoriousId);
-      } else {
-        this.currentDrawerIndex =
-          (this.currentDrawerIndex + 1) % this.players.length;
-      }
+      this.victoriousIndex = this.players.indexOf(victoriousId);
     } else {
       const msg: Message = {
-        userId: "",
+        userId: "admin",
         userName: "Крокодил",
-        text: "Время вышло :(, новый раунд",
+        text: reason,
       };
       this.server.emit("newMsg", msg);
-      this.currentDrawerIndex =
-        (this.currentDrawerIndex + 1) % this.players.length;
+      this.victoriousIndex = -1;
     }
     this.startNewRound();
   }
 
   private startTimer() {
     this.timeLeft = this.roundDuration;
+    this.server.emit("timeUpdate", this.timeLeft);
     this.timer = setInterval(() => {
       this.timeLeft--;
 
-      if (this.timeLeft <= -1) {
-        this.endRound();
+      if (this.timeLeft < 0) {
+        this.endRound("Время вышло :(, новый раунд");
       } else {
         this.server.emit("timeUpdate", this.timeLeft);
       }
@@ -123,13 +140,9 @@ export class Gameflow {
   }
 
   private getCurrentState(): GameState {
-    console.log(this.currentDrawerIndex);
     return {
-      currentDrawerId:
-        this.currentDrawerIndex === -1
-          ? null
-          : this.players[this.currentDrawerIndex],
-      isPlaying: this.isPlaying,
+      currentDrawerId: this.getDrawerId(),
+      gamePhase: this.gamePhase,
       timeLeft: this.timeLeft,
     };
   }

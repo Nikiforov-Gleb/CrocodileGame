@@ -1,10 +1,11 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
+import type { GamePhase } from "../types";
 
 export interface GameState {
   currentDrawerId: string | null;
   word: string | null;
-  isPlaying: boolean;
+  gamePhase: GamePhase;
   timeLast: number;
   isHost: boolean;
 }
@@ -13,7 +14,7 @@ const initialState: GameState = {
   currentDrawerId: null,
   word: null,
   timeLast: 0,
-  isPlaying: false,
+  gamePhase: "notActive",
   isHost: false,
 };
 
@@ -26,7 +27,7 @@ export const gameflowSlice = createSlice({
       action: PayloadAction<Omit<GameState, "word"> & { socketId: string }>,
     ) => {
       state.currentDrawerId = action.payload.currentDrawerId;
-      state.isPlaying = action.payload.isPlaying;
+      state.gamePhase = action.payload.gamePhase;
       state.timeLast = action.payload.timeLast;
       state.isHost = state.currentDrawerId === action.payload.socketId;
     },

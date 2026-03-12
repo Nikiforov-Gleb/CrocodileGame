@@ -14,8 +14,6 @@ const server = new Server(httpServer, {
 const gameflow = new Gameflow(server);
 
 server.on("connection", (socket) => {
-  socket.emit("connectionSet", socket.id);
-
   socket.on("joinGame", ({ nickname }) => {
     gameflow.startPlay(socket.id, nickname);
   });
@@ -37,11 +35,18 @@ server.on("connection", (socket) => {
   socket.on("clearCanvas", () => {
     socket.broadcast.emit("clearCanvas");
   });
+
+  socket.on("leftGame", () => {
+    console.log("left");
+    gameflow.removePlayer(socket.id);
+  });
+
+  socket.on("disconnect", () => {
+    gameflow.removePlayer(socket.id);
+  });
 });
 
 const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, () => {
   console.log("Server is running");
 });
-
-// `${socket.id} количесвто ${server.engine.clientsCount}`

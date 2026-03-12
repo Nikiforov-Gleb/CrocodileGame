@@ -15,6 +15,7 @@ function App() {
         <Route index element={<StartPage />} />
         <Route path="game" element={<GamePage />} />
         <Route path="about" element={<AboutPage />} />
+        <Route path="*" element={<div>Что-то пошло не так :(</div>} />
       </Routes>
       <Footer />
     </div>
