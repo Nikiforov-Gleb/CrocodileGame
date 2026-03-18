@@ -24,7 +24,9 @@ export const gameflowSlice = createSlice({
   reducers: {
     setGameState: (
       state,
-      action: PayloadAction<Omit<GameState, "word"> & { socketId: string }>,
+      action: PayloadAction<
+        Omit<GameState, "word" | "isHost"> & { socketId: string }
+      >,
     ) => {
       state.currentDrawerId = action.payload.currentDrawerId;
       state.gamePhase = action.payload.gamePhase;

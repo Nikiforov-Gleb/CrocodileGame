@@ -21,7 +21,6 @@ export const Game = () => {
 
   useEffect(() => {
     socket.emit("joinGame", { nickname: UserData.nickname });
-    console.log("join");
   }, []);
 
   useEffect(() => {
@@ -36,12 +35,13 @@ export const Game = () => {
 
     socket.on("gameHost", handleGameHost);
     socket.on("updatedGameState", handleUpdateState);
+    socket.on("endRound", () => clearFn?.(false));
 
     return () => {
       socket.off("gameHost", handleGameHost);
       socket.off("updatedGameState", handleUpdateState);
     };
-  }, [dispatch]);
+  }, [dispatch, clearFn]);
 
   return (
     <div className="game-container">

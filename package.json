@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:serv": "nodemon --exec ts-node src/server/server.ts",
+    "dev:serv": "nodemon --exec ts-node src/server/runServer.ts",
     "start": "ts-node src/server/server.ts",
     "build": "tsc -b && vite build",
     "lint:check": "eslint src && prettier --check .",
@@ -38,6 +38,7 @@
     "@vitejs/plugin-react": "^5.1.4",
     "@vitest/coverage-v8": "^4.0.18",
     "babel-plugin-react-compiler": "^1.0.0",
+    "canvas": "^3.2.1",
     "eslint": "^9.39.1",
     "eslint-plugin-jest": "^29.15.0",
     "eslint-plugin-react-hooks": "^7.0.1",

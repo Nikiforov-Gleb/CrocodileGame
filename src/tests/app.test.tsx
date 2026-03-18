@@ -14,7 +14,7 @@ describe("App component", () => {
       { wrapper: BrowserRouter },
     );
 
-    screen.debug();
+    //screen.debug();
     const element = screen.getByText(/Крокодил/i);
     expect(element).toBeInTheDocument();
   });

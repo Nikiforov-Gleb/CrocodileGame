@@ -70,6 +70,7 @@ export const Canvas = ({ getMethods }: CanvasProps) => {
     return () => {
       window.removeEventListener("resize", handleResize);
       socket.off("drawing");
+      socket.off("clearCanvas");
     };
   }, [getMethods]);
 

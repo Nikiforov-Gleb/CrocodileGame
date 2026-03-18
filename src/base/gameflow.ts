@@ -17,7 +17,7 @@ export class Gameflow {
   private players: string[] = [];
   private nicknames: Record<string, string> = {};
   private currentDrawerIndex = -1;
-  private victoriousIndex = -1;
+  private winnerIndex = -1;
   private gamePhase: GamePhase = "notActive";
   private timeLeft: number = 0;
 
@@ -43,7 +43,7 @@ export class Gameflow {
     this.currentWord = null;
     this.timeLeft = 0;
     this.currentDrawerIndex = -1;
-    this.victoriousIndex = -1;
+    this.winnerIndex = -1;
   }
 
   removePlayer(id: string) {
@@ -60,7 +60,7 @@ export class Gameflow {
       } else if (removedIndex === this.currentDrawerIndex) {
         this.endRound("Ведущий вышел из игры:( Новый раунд");
       }
-      if (removedIndex === this.victoriousIndex) this.victoriousIndex = -1;
+      if (removedIndex === this.winnerIndex) this.winnerIndex = -1;
     }
   }
 
@@ -75,8 +75,8 @@ export class Gameflow {
     if (this.gamePhase === "loadingRound") return;
     this.gamePhase = "loadingRound";
     this.emitAllCurrentState();
-    if (this.victoriousIndex !== -1) {
-      this.currentDrawerIndex = this.victoriousIndex;
+    if (this.winnerIndex !== -1) {
+      this.currentDrawerIndex = this.winnerIndex;
     } else {
       this.currentDrawerIndex =
         (this.currentDrawerIndex + 1) % this.players.length;
@@ -92,20 +92,20 @@ export class Gameflow {
     this.startTimer();
   }
 
-  private endRound(reason: string, victoriousId?: string) {
+  private endRound(reason: string, winnerId?: string) {
     this.server.emit("endRound");
 
     this.clearTimer();
     this.emitGameHost(false);
-    if (victoriousId) {
-      const nickname = this.nicknames[victoriousId] || victoriousId;
+    if (winnerId) {
+      const nickname = this.nicknames[winnerId] || winnerId;
       const msg: Message = {
         userId: "admin",
         userName: "Крокодил",
         text: `${nickname} отгадал "${this.currentWord}"`,
       };
       this.server.emit("newMsg", msg);
-      this.victoriousIndex = this.players.indexOf(victoriousId);
+      this.winnerIndex = this.players.indexOf(winnerId);
     } else {
       const msg: Message = {
         userId: "admin",
@@ -113,7 +113,7 @@ export class Gameflow {
         text: reason,
       };
       this.server.emit("newMsg", msg);
-      this.victoriousIndex = -1;
+      this.winnerIndex = -1;
     }
     this.startNewRound();
   }
