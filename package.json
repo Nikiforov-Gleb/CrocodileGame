@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:serv": "nodemon --exec ts-node src/server/runServer.ts",
-    "start": "ts-node src/server/server.ts",
+    "start": "ts-node src/server/runServer.ts",
     "build": "tsc -b && vite build",
     "lint:check": "eslint src && prettier --check .",
     "lint:fix": "eslint src --fix && prettier --write .",
