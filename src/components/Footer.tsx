@@ -7,7 +7,7 @@ export const Footer: FC = () => {
       <div className="container">
         <p>
           Crocodile game App &copy;
-          <script>document.write(new Date().getFullYear());</script>
+          {new Date().getFullYear()}
         </p>
         <p>Randow words provided by RandomWordAPI</p>
       </div>

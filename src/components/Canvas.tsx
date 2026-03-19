@@ -22,6 +22,7 @@ export const Canvas = ({ getMethods }: CanvasProps) => {
   );
 
   const canDraw = useSelector((state: RootState) => state.gameflow.isHost);
+  const lang = useSelector((state: RootState) => state.gameflow.language);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -42,6 +43,7 @@ export const Canvas = ({ getMethods }: CanvasProps) => {
       ctxRef,
       lastPosRef,
       isDrawingRef,
+      lang,
     );
 
     const handleResize = () => {
@@ -72,7 +74,7 @@ export const Canvas = ({ getMethods }: CanvasProps) => {
       socket.off("drawing");
       socket.off("clearCanvas");
     };
-  }, [getMethods]);
+  }, [getMethods, lang]);
 
   return (
     <div ref={containerRef} className="canvas-container">

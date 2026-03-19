@@ -12,6 +12,7 @@ export const Chat = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const canWrite = !useSelector((state: RootState) => state.gameflow.isHost);
+  const lang = useSelector((state: RootState) => state.gameflow.language);
 
   useEffect(() => {
     const handleNewMsg = (msg: Message) => {
@@ -23,7 +24,7 @@ export const Chat = () => {
     return () => {
       socket.off("newMsg", handleNewMsg);
     };
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -33,7 +34,7 @@ export const Chat = () => {
 
   const handleSend = () => {
     if (!input.trim()) return;
-    socket.emit("chatMessage", input, UserData.nickname);
+    socket.emit("chatMessage", input, UserData.nickname, lang);
     setInput("");
   };
 

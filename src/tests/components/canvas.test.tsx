@@ -18,6 +18,7 @@ import { fireEvent, render } from "@testing-library/react";
 import { setGameState } from "../../features/gameflowSlice";
 
 describe("Canvas", () => {
+  const lang = "en";
   beforeEach(async () => {
     vi.clearAllMocks();
   });
@@ -25,6 +26,7 @@ describe("Canvas", () => {
   it("should render canvas and container", () => {
     store.dispatch(
       setGameState({
+        language: "en",
         currentDrawerId: "111",
         gamePhase: "playing",
         timeLast: 30,
@@ -45,6 +47,7 @@ describe("Canvas", () => {
   it("should call canvasActions on mouse events if host", async () => {
     store.dispatch(
       setGameState({
+        language: "en",
         currentDrawerId: "111",
         gamePhase: "playing",
         timeLast: 30,
@@ -63,12 +66,17 @@ describe("Canvas", () => {
     fireEvent.mouseMove(canvasEl, { clientX: 20, clientY: 20 });
     fireEvent.mouseUp(canvasEl);
 
-    expect(socket.emit).toHaveBeenCalledWith("drawing", expect.any(Array));
+    expect(socket.emit).toHaveBeenCalledWith(
+      "drawing",
+      expect.any(Array),
+      lang,
+    );
   });
 
   it("should respond to socket events when not host", () => {
     store.dispatch(
       setGameState({
+        language: "en",
         currentDrawerId: "222",
         gamePhase: "playing",
         timeLast: 30,

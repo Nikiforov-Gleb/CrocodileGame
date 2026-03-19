@@ -1,7 +1,7 @@
 import type { Server as HTTPServer } from "http";
 import { Server } from "socket.io";
 import type { Message, Point } from "../types";
-import { Gameflow } from "../base/gameflow.ts";
+import { GamesManager } from "../base/gamesManager.ts";
 
 export function createSocketServer(httpServer: HTTPServer) {
   const server = new Server(httpServer, {
@@ -10,38 +10,48 @@ export function createSocketServer(httpServer: HTTPServer) {
     },
   });
 
-  const gameflow = new Gameflow(server);
+  const gamesManager = new GamesManager(server);
 
   server.on("connection", (socket) => {
-    socket.on("joinGame", ({ nickname }) => {
-      gameflow.startPlay(socket.id, nickname);
+    socket.on(
+      "joinGame",
+      (nickname: string, lang: string, callback?: () => void) => {
+        console.log("Add " + socket.id + " " + lang);
+        socket.join(lang);
+        const gameflow = gamesManager.getGame(lang);
+        gameflow.startPlay(socket.id, nickname, lang);
+        callback?.();
+      },
+    );
+
+    socket.on(
+      "chatMessage",
+      (msgText: string, nickname: string, lang: string) => {
+        const gameflow = gamesManager.getGame(lang);
+        const msg: Message = {
+          userId: socket.id,
+          userName: nickname,
+          text: msgText,
+        };
+        server.to(lang).emit("newMsg", msg);
+        gameflow.checkGuess(msg);
+      },
+    );
+
+    socket.on("drawing", (points: [Point, Point], lang: string) => {
+      socket.to(lang).emit("drawing", points);
     });
 
-    socket.on("chatMessage", (msgText: string, nickname: string) => {
-      const msg: Message = {
-        userId: socket.id,
-        userName: nickname,
-        text: msgText,
-      };
-      server.emit("newMsg", msg);
-      gameflow.checkGuess(msg);
-    });
-
-    socket.on("drawing", (points: [Point, Point]) => {
-      socket.broadcast.emit("drawing", points);
-    });
-
-    socket.on("clearCanvas", () => {
-      socket.broadcast.emit("clearCanvas");
+    socket.on("clearCanvas", (lang: string) => {
+      socket.to(lang).emit("clearCanvas");
     });
 
     socket.on("leftGame", () => {
-      console.log("left");
-      gameflow.removePlayer(socket.id);
+      gamesManager.removePlayer(socket.id);
     });
 
     socket.on("disconnect", () => {
-      gameflow.removePlayer(socket.id);
+      gamesManager.removePlayer(socket.id);
     });
   });
 

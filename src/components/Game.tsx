@@ -6,11 +6,13 @@ import {
   setNewWord,
   setGameState,
   type GameState,
+  setLanguage,
 } from "../features/gameflowSlice.ts";
 import { socket } from "../server/socket.ts";
 import { Canvas } from "./Canvas";
 import { Timer } from "./Timer.tsx";
 import { UserData } from "../base/userData";
+import { useParams } from "react-router-dom";
 
 export const Game = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,10 +20,13 @@ export const Game = () => {
   const word = useSelector((state: RootState) => state.gameflow.word);
   const isHost = useSelector((state: RootState) => state.gameflow.isHost);
   const gamePhase = useSelector((state: RootState) => state.gameflow.gamePhase);
+  const { lang } = useParams();
 
   useEffect(() => {
-    socket.emit("joinGame", { nickname: UserData.nickname });
-  }, []);
+    const language = lang ?? "en";
+    dispatch(setLanguage(language));
+    socket.emit("joinGame", UserData.nickname, language);
+  }, [dispatch, lang]);
 
   useEffect(() => {
     const handleGameHost = (word: string) => {

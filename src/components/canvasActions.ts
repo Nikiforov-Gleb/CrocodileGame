@@ -7,6 +7,7 @@ export const createCanvasActions = (
   ctxRef: React.RefObject<CanvasRenderingContext2D | null>,
   lastPosRef: { current: Point | null },
   isDrawingRef: { current: boolean },
+  lang: string,
 ) => {
   const getMousePos = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (!canvasRef || !canvasRef.current) return;
@@ -37,7 +38,8 @@ export const createCanvasActions = (
       const normStart: Point = getNormalizedPointFromReal(start, canvas);
       const normEnd: Point = getNormalizedPointFromReal(end, canvas);
 
-      socket.emit("drawing", [normStart, normEnd]);
+      console.log(lang);
+      socket.emit("drawing", [normStart, normEnd], lang);
     }
   };
 
@@ -62,7 +64,7 @@ export const createCanvasActions = (
     );
 
     if (needEmit) {
-      socket.emit("clearCanvas");
+      socket.emit("clearCanvas", lang);
     }
   };
 

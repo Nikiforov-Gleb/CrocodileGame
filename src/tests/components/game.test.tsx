@@ -41,15 +41,14 @@ describe("Game component", () => {
       </Provider>,
     );
     await waitFor(() => {
-      expect(socket.emit).toHaveBeenCalledWith("joinGame", {
-        nickname: "Player",
-      });
+      expect(socket.emit).toHaveBeenCalledWith("joinGame", "Player", "en");
     });
   });
 
   it("shows loading text during loadingRound", async () => {
     store.dispatch(
       setGameState({
+        language: "en",
         currentDrawerId: "222",
         gamePhase: "loadingRound",
         timeLast: 30,
@@ -71,6 +70,7 @@ describe("Game component: is not host", () => {
   beforeEach(() => {
     store.dispatch(
       setGameState({
+        language: "en",
         currentDrawerId: "222",
         gamePhase: "playing",
         timeLast: 30,
@@ -112,6 +112,7 @@ describe("Game component: is host", () => {
   beforeEach(() => {
     store.dispatch(
       setGameState({
+        language: "en",
         currentDrawerId: "111",
         gamePhase: "playing",
         timeLast: 30,

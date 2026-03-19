@@ -8,6 +8,7 @@ import {
 
 describe("gameflow slice", () => {
   const initialState: GameState = {
+    language: "en",
     currentDrawerId: null,
     word: null,
     timeLast: 0,
@@ -23,6 +24,7 @@ describe("gameflow slice", () => {
 
   it("should update game state and set isHost false when currentDrawerId does not match socketId", () => {
     const payload = {
+      language: "en",
       currentDrawerId: "12345",
       gamePhase: "active" as GameState["gamePhase"],
       timeLast: 60,
@@ -33,6 +35,7 @@ describe("gameflow slice", () => {
     const result = gameflowSlice.reducer(initialState, action);
 
     expect(result).toEqual({
+      language: "en",
       currentDrawerId: "12345",
       word: null,
       gamePhase: "active",

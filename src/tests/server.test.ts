@@ -21,6 +21,7 @@ let client: ReturnType<typeof io>;
 let port: number;
 
 describe("Server with mocked Gameflow", () => {
+  const lang = "en";
   beforeAll(async () => {
     httpServer = createServer();
     server = createSocketServer(httpServer);
@@ -36,7 +37,11 @@ describe("Server with mocked Gameflow", () => {
         port = address.port;
 
         client = io(`http://localhost:${port}`);
-        client.on("connect", () => resolve());
+        client.once("connect", () => {
+          client.emit("joinGame", "Player", lang, () => {
+            resolve();
+          });
+        });
       });
     });
   });
@@ -52,11 +57,12 @@ describe("Server with mocked Gameflow", () => {
   });
 
   it("should call start game when join", async () => {
-    const nickname = "Player";
-    client.emit("joinGame", { nickname });
-
     await new Promise((r) => setTimeout(r, 20));
-    expect(mockGameflow.startPlay).toHaveBeenCalledWith(client.id, nickname);
+    expect(mockGameflow.startPlay).toHaveBeenCalledWith(
+      client.id,
+      "Player",
+      lang,
+    );
   });
 
   it("should call check guess when new msg", async () => {
@@ -67,7 +73,7 @@ describe("Server with mocked Gameflow", () => {
       client.once("newMsg", resolve);
     });
 
-    client.emit("chatMessage", msg, nickname);
+    client.emit("chatMessage", msg, nickname, lang);
     const receivedMsg = await newMsgPromise;
 
     expect(mockGameflow.checkGuess).toHaveBeenCalledTimes(1);
@@ -98,6 +104,10 @@ describe("Server with mocked Gameflow", () => {
     const clientOther = io(`http://localhost:${port}`);
     await new Promise<void>((resolve) => clientOther.once("connect", resolve));
 
+    await new Promise<void>((resolve) => {
+      clientOther.emit("joinGame", "OtherPlayer", lang, resolve);
+    });
+
     const drawingPromise = new Promise<[Point, Point]>((resolve) => {
       clientOther.once("drawing", resolve);
     });
@@ -110,7 +120,7 @@ describe("Server with mocked Gameflow", () => {
       });
     });
 
-    client.emit("drawing", [startPoint, endPoint]);
+    client.emit("drawing", [startPoint, endPoint], lang);
     const received = await drawingPromise;
     expect(received).toEqual([startPoint, endPoint]);
 

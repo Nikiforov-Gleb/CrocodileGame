@@ -16,9 +16,11 @@ vi.mock("../../server/socket", () => ({
 describe("Header", () => {
   it("should go to page About when click button About ", () => {
     render(
-      <MemoryRouter initialEntries={["/"]}>
-        <App />
-      </MemoryRouter>,
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/"]}>
+          <App />
+        </MemoryRouter>
+      </Provider>,
     );
 
     fireEvent.click(screen.getByText("Об игре"));
@@ -27,9 +29,11 @@ describe("Header", () => {
 
   it("should show only btn 'Об игре' if on main page", () => {
     render(
-      <MemoryRouter initialEntries={["/"]}>
-        <App />
-      </MemoryRouter>,
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/"]}>
+          <App />
+        </MemoryRouter>
+      </Provider>,
     );
 
     expect(screen.queryByText("На главную")).not.toBeInTheDocument();

@@ -31,6 +31,7 @@ describe("utils: getRealPointFromNormalized", () => {
 });
 
 describe("utils: getRandomWord", () => {
+  const lang = "en";
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -41,11 +42,11 @@ describe("utils: getRandomWord", () => {
       createFetchResponse([word], 200) as Response,
     );
 
-    const result = await getRandomWord();
+    const result = await getRandomWord(lang);
     expect(result).toBe(word);
     expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(global.fetch).toHaveBeenCalledWith(
-      "https://random-word-api.herokuapp.com/word?number=1&diff=1",
+      `https://random-word-api.herokuapp.com/word?lang=${lang}&number=1&diff=1`,
     );
   });
   it("if fetch response error, should use word from array (word[0])", async () => {
@@ -54,7 +55,7 @@ describe("utils: getRandomWord", () => {
     );
     vi.spyOn(Math, "random").mockReturnValue(0);
 
-    const result = await getRandomWord();
+    const result = await getRandomWord(lang);
     expect(result).toBe(words[0]);
   });
 });

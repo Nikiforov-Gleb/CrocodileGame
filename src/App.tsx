@@ -13,7 +13,7 @@ function App() {
       <Header />
       <Routes>
         <Route index element={<StartPage />} />
-        <Route path="game" element={<GamePage />} />
+        <Route path="game/:lang" element={<GamePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="*" element={<div>Что-то пошло не так :(</div>} />
       </Routes>

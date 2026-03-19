@@ -25,10 +25,10 @@ export const getRealPointFromNormalized = (
   };
 };
 
-export const getRandomWord = async (): Promise<string> => {
+export const getRandomWord = async (lang: string): Promise<string> => {
   try {
     const res = await fetch(
-      "https://random-word-api.herokuapp.com/word?number=1&diff=1",
+      `https://random-word-api.herokuapp.com/word?lang=${lang}&number=1&diff=1`,
     );
     if (!res.ok) {
       throw new Error("Ошибка запроса");

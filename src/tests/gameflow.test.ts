@@ -35,6 +35,7 @@ interface GameflowPrototype {
 describe("Gameflow: start game", () => {
   let server: Server;
   let gameflow: Gameflow;
+  const lang = "en";
 
   const players = (gameflow: Gameflow) =>
     (gameflow as unknown as GameflowPrototype).players;
@@ -50,22 +51,22 @@ describe("Gameflow: start game", () => {
   });
 
   it("player added in game", () => {
-    gameflow.startPlay("111", "Player");
+    gameflow.startPlay("111", "Player", lang);
 
     expect(players(gameflow)).toContain("111");
     expect(nicknames(gameflow)["111"]).toBe("Player");
   });
 
   it("only first player start round", () => {
-    gameflow.startPlay("111", "Player");
+    gameflow.startPlay("111", "Player", lang);
     (gameflow as unknown as GameflowPrototype).gamePhase = "playing";
-    gameflow.startPlay("222", "PlayerNew");
+    gameflow.startPlay("222", "PlayerNew", lang);
 
     expect(gameflow.startNewRound).toHaveBeenCalled();
   });
 
   it("new player get current state game", () => {
-    gameflow.startPlay("111", "Player1");
+    gameflow.startPlay("111", "Player1", lang);
     expect(server.to).toHaveBeenCalledWith("111");
     expect(server.emit).toHaveBeenCalledWith(
       "updatedGameState",
@@ -141,6 +142,7 @@ describe("Gameflow: start round", () => {
 describe("Gameflow: remove player", () => {
   let server: Server;
   let gameflow: Gameflow;
+  const lang = "en";
 
   const players = (gameflow: Gameflow) =>
     (gameflow as unknown as GameflowPrototype).players;
@@ -158,8 +160,8 @@ describe("Gameflow: remove player", () => {
   });
 
   it("should remove player", () => {
-    gameflow.startPlay("111", "Player1");
-    gameflow.startPlay("222", "Player2");
+    gameflow.startPlay("111", "Player1", lang);
+    gameflow.startPlay("222", "Player2", lang);
 
     gameflow.removePlayer("111");
 
@@ -168,7 +170,7 @@ describe("Gameflow: remove player", () => {
   });
 
   it("should stop game if removed last player", () => {
-    gameflow.startPlay("111", "Player1");
+    gameflow.startPlay("111", "Player1", lang);
     gameflow.removePlayer("111");
 
     expect(players(gameflow)).toEqual([]);
@@ -180,8 +182,8 @@ describe("Gameflow: remove player", () => {
   });
 
   it("should end round if drawer left game", () => {
-    gameflow.startPlay("111", "Player1");
-    gameflow.startPlay("222", "Player2");
+    gameflow.startPlay("111", "Player1", lang);
+    gameflow.startPlay("222", "Player2", lang);
     (gameflow as unknown as GameflowPrototype).currentDrawerIndex = 0;
     gameflow.removePlayer("111");
 
@@ -191,9 +193,9 @@ describe("Gameflow: remove player", () => {
   });
 
   it("should recalculated drawer index if removed before drawing in queue", () => {
-    gameflow.startPlay("111", "Player1");
-    gameflow.startPlay("222", "Player2");
-    gameflow.startPlay("333", "Player3");
+    gameflow.startPlay("111", "Player1", lang);
+    gameflow.startPlay("222", "Player2", lang);
+    gameflow.startPlay("333", "Player3", lang);
     (gameflow as unknown as GameflowPrototype).currentDrawerIndex = 2;
     gameflow.removePlayer("111");
 
@@ -206,6 +208,7 @@ describe("Gameflow: remove player", () => {
 describe("Gameflow: check word", () => {
   let server: Server;
   let gameflow: Gameflow;
+  const lang = "en";
 
   beforeEach(() => {
     server = createMockServer();
@@ -217,7 +220,7 @@ describe("Gameflow: check word", () => {
   });
 
   it("should do nothing if the word in message don't match", () => {
-    gameflow.startPlay("111", "Player1");
+    gameflow.startPlay("111", "Player1", lang);
     (gameflow as unknown as GameflowPrototype).currentWord = "word";
     const msg: Message = {
       userId: "111",
@@ -231,7 +234,7 @@ describe("Gameflow: check word", () => {
   });
 
   it("should end round if the word in message match", () => {
-    gameflow.startPlay("111", "Player1");
+    gameflow.startPlay("111", "Player1", lang);
     (gameflow as unknown as GameflowPrototype).currentWord = "word";
     const msg: Message = {
       userId: "111",
@@ -337,6 +340,7 @@ describe("Gameflow: get current state", () => {
 describe("Gameflow: get drawer id", () => {
   let server: Server;
   let gameflow: Gameflow;
+  const lang = "en";
 
   beforeEach(() => {
     server = createMockServer();
@@ -354,8 +358,8 @@ describe("Gameflow: get drawer id", () => {
   });
 
   it("should return player id who is drawer", () => {
-    gameflow.startPlay("111", "Player1");
-    gameflow.startPlay("222", "Player2");
+    gameflow.startPlay("111", "Player1", lang);
+    gameflow.startPlay("222", "Player2", lang);
 
     (gameflow as unknown as GameflowPrototype).currentDrawerIndex = 1;
     const result = (gameflow as unknown as GameflowPrototype).getDrawerId();
