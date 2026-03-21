@@ -73,10 +73,6 @@ button {
   transition: background-color 0.2s;
 }
 
-button.start {
-  width: 100%;
-}
-
 button:disabled {
   background-color: #aaa;
   cursor: not-allowed;

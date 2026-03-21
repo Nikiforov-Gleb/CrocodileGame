@@ -49,7 +49,6 @@ export const StartPage: FC = () => {
           </select>
         </div>
         <button
-          className="start"
           onClick={handleStartGame}
           disabled={!nameInput.trim()}
         >
