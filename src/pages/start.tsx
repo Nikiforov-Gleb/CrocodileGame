@@ -48,10 +48,7 @@ export const StartPage: FC = () => {
             ))}
           </select>
         </div>
-        <button
-          onClick={handleStartGame}
-          disabled={!nameInput.trim()}
-        >
+        <button onClick={handleStartGame} disabled={!nameInput.trim()}>
           Начать игру
         </button>
       </div>
