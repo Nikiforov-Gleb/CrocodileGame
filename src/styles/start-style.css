@@ -62,7 +62,6 @@ input[type="text"] {
 
 button {
   padding: 10px 24px;
-  width: 100%;
   max-width: 300px;
   margin-top: 10px;
   font-size: 16px;
@@ -72,6 +71,10 @@ button {
   color: white;
   cursor: pointer;
   transition: background-color 0.2s;
+}
+
+button.start {
+  width: 100%;
 }
 
 button:disabled {

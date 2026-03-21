@@ -24,7 +24,7 @@ describe("Header", () => {
     );
 
     fireEvent.click(screen.getByText("Об игре"));
-    expect(screen.getByText("Правила игры")).toBeInTheDocument();
+    expect(screen.getByText("Удачи и веселой игры!")).toBeInTheDocument();
   });
 
   it("should show only btn 'Об игре' if on main page", () => {
