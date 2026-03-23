@@ -8,6 +8,7 @@
     "dev:serv": "nodemon --exec ts-node src/server/runServer.ts",
     "start": "ts-node src/server/runServer.ts",
     "build": "tsc -b && vite build",
+    "postbuild": "cp dist/index.html dist/404.html",
     "lint:check": "eslint src && prettier --check .",
     "lint:fix": "eslint src --fix && prettier --write .",
     "preview": "vite preview",
