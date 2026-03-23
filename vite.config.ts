@@ -20,9 +20,9 @@ export default defineConfig({
     coverage: {
       include: ["src/**/*.{ts,tsx}"],
       thresholds: {
-        functions: 60,
-        branches: 60,
-        lines: 60,
+        functions: 70,
+        branches: 70,
+        lines: 70,
       },
     },
   },
