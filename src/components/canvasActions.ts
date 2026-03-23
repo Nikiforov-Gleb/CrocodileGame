@@ -38,7 +38,6 @@ export const createCanvasActions = (
       const normStart: Point = getNormalizedPointFromReal(start, canvas);
       const normEnd: Point = getNormalizedPointFromReal(end, canvas);
 
-      console.log(lang);
       socket.emit("drawing", [normStart, normEnd], lang);
     }
   };

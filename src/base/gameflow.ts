@@ -160,7 +160,6 @@ export class Gameflow {
     const drawerId = this.getDrawerId();
     if (drawerId)
       this.server
-        .to(this.language)
         .to(drawerId)
         .emit("gameHost", isGameHost ? this.currentWord : null);
   }

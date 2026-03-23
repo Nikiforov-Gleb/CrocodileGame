@@ -16,7 +16,6 @@ export function createSocketServer(httpServer: HTTPServer) {
     socket.on(
       "joinGame",
       (nickname: string, lang: string, callback?: () => void) => {
-        console.log("Add " + socket.id + " " + lang);
         socket.join(lang);
         const gameflow = gamesManager.getGame(lang);
         gameflow.startPlay(socket.id, nickname, lang);
